@@ -1,0 +1,1 @@
+C:\documents\workspace\AMYPROJECTS\nationalgeo>"C:\dev\gradle-3.5\bin\gradle.bat" build
