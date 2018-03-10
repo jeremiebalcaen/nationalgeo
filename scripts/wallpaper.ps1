@@ -1,7 +1,8 @@
 #Get arguments
 $path=$args[0]
-$proxyhost=$args[1]
-$proxyport=$args[2]
+$archive=$args[1]
+$proxyhost=$args[2]
+$proxyport=$args[3]
 
 #Log file
 Start-Transcript "$path\output.txt"
@@ -9,12 +10,13 @@ Start-Transcript "$path\output.txt"
 #Arguments
 Write-Output "arguments "
 Write-Output "Path: " $path
+Write-Output "Archive: " $archive
 Write-Output "Proxy host: " $proxyhost
 Write-Output "Proxy port: " $proxyport
 
 #Execute Java program
 Write-Output "execute java program"
-java -jar "$path\nationalgeographic.jar" $path $proxyhost $proxyport
+java -jar "$path\nationalgeographic.jar" $path $archive $proxyhost $proxyport
 
 #Update registry value for the correct wallpaper
 Write-Output "Update registry in the correct wallpaper"

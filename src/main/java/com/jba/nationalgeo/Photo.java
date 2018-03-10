@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -37,20 +40,42 @@ public class Photo {
 	private static String proxyHost;
 	
 	private static String proxyPort;
-	
+
 	public static void main(String[] args) throws Exception {
+		boolean getArchivedPhoto = false;
 		if(args.length != 0) {
 			String programLocation = args[0];
 			setPhotoProgramLocation(programLocation);
-			if(args.length == 3) {
-				proxyHost = args[1];
-				proxyPort = args[2];
+			String getPhotoFromArchive = args[1];
+			getArchivedPhoto = Boolean.valueOf(getPhotoFromArchive);
+			if(args.length == 4) {
+				proxyHost = args[2];
+				proxyPort = args[3];
 			}
 		}
 		Photo http = new Photo();
-		String url = http.getUrlOfPhoto(PHOTO_OF_THE_DAY_URL);
-		http.downloadPhoto(url);
-		http.copyPhotoOfTheDay();
+		if(getArchivedPhoto) {
+			getRandomPhoto();
+		}
+		else {
+			String url = http.getUrlOfPhoto(PHOTO_OF_THE_DAY_URL);
+			http.downloadPhoto(url);
+			http.copyPhotoOfTheDay();
+		}
+	}
+
+	private static void getRandomPhoto() throws IOException {
+		String archiveLocation = getPhotoArchiveLocation();
+
+		File dir = new File(archiveLocation);
+		File[] files = dir.listFiles();
+		int size = files.length;
+
+		int idz = (int)(Math.random() * size);
+		File chosenFile = files[idz];
+
+		File fileDest = new File(getPhotoDownloadLocation());
+		Files.copy(chosenFile.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	private static String getPhotoProgramLocation() {
