@@ -1,11 +1,12 @@
 #Get arguments
 $path=$args[0]
-$archive=$args[1]
-$proxyhost=$args[2]
-$proxyport=$args[3]
+$outputfile=$args[1]
+$archive=$args[2]
+$proxyhost=$args[3]
+$proxyport=$args[4]
 
 #Log file
-Start-Transcript "$path\output.txt"
+Start-Transcript -Append "$outputfile"
 
 #Arguments
 Write-Output "arguments "
