@@ -49,17 +49,8 @@ public class JSonReader {
         JSONArray items = json.getJSONArray("items");
         JSONObject item = items.getJSONObject(0);
         JSONObject sizes;
-        String url = null;
-        if(item.has("sizes")) {
-            sizes = item.getJSONObject("sizes");
-            if(sizes.has("2048")) {
-                url = sizes.getString("2048");
-            }
-        }
-        else {
-            url = item.getString("url");
-        }
-
+        JSONObject image = item.getJSONObject("image");
+        String url = image.getString("uri");
         System.out.print("URL to download: " + url);
         return url;
     }
