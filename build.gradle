@@ -10,7 +10,14 @@
 apply plugin: 'java-library'
 
 configurations {
-	libraries
+// configuration that holds jars to include in the jar
+    extraLibs
+}
+dependencies {
+    extraLibs group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
+    extraLibs group: 'org.json', name: 'json', version: '20180130'
+    configurations.compile.extendsFrom(configurations.extraLibs)
+    implementation 'com.google.guava:guava:21.0'
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -18,29 +25,6 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
-}
-
-dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    //api 'org.apache.commons:commons-math3:3.6.1'
-    
-   api 'org.apache.httpcomponents:httpclient:4.5.3'
-
-    api 'org.json:json:20180130'
-   
-   compile 'org.apache.httpcomponents:httpclient:4.5.3'
-
-   compile 'org.json:json:20180130'
-   
-   libraries 'org.apache.httpcomponents:httpclient:4.5.3'
-
-    libraries 'org.json:json:20180130'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:21.0'
-
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
 }
 
 jar {
@@ -51,6 +35,9 @@ jar {
       'Main-Class': 'com.jba.nationalgeo.Photo'
     )
   }
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 

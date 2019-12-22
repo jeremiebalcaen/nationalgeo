@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -84,8 +85,11 @@ public class Photo {
 
 	private void copyPhotoOfTheDay() throws IOException {
 		File fileSource = new File(getPhotoDownloadLocation());
+		Path fileSourcePath = fileSource.toPath();
 		File fileArchiveDest = new File(getPhotoArchiveLocation() + getArchiveDateFileName() + "_" + PHOTO_FILE_NAME);
-		Files.copy(fileSource.toPath(), fileArchiveDest.toPath());
+		Path fileArchiveDestPath = fileArchiveDest.toPath();
+		Files.createDirectories(fileArchiveDestPath.getParent());
+		Files.copy(fileSourcePath, fileArchiveDestPath);
 	}
 
 	private void downloadPhoto(String urlString) throws Exception {
