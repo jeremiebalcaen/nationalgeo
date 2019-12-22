@@ -58,6 +58,7 @@ public class Photo {
 		File chosenFile = files[idz];
 
 		File fileDest = new File(getPhotoDownloadLocation());
+		System.out.println(String.format("Copying file [%1$s] to destination [%2$s]", chosenFile.toPath(), fileDest.toPath());
 		Files.copy(chosenFile.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
