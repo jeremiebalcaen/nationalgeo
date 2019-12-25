@@ -1,9 +1,10 @@
 #Get arguments
 $path=$args[0]
-$outputfile=$args[1]
-$archive=$args[2]
-$proxyhost=$args[3]
-$proxyport=$args[4]
+$download=$args[1]
+$outputfile=$args[2]
+$archive=$args[3]
+$proxyhost=$args[4]
+$proxyport=$args[5]
 
 #Log file
 Start-Transcript -Append "$outputfile"
@@ -11,17 +12,18 @@ Start-Transcript -Append "$outputfile"
 #Arguments
 Write-Output "arguments "
 Write-Output "Path: " $path
+Write-Output "Download Path: " $download
 Write-Output "Archive: " $archive
 Write-Output "Proxy host: " $proxyhost
 Write-Output "Proxy port: " $proxyport
 
 #Execute Java program
 Write-Output "execute java program"
-java -jar "$path\nationalgeographic.jar" $path $archive $proxyhost $proxyport
+java -jar "$path\nationalgeographic.jar" $download $archive $proxyhost $proxyport
 
 #Update registry value for the correct wallpaper
 Write-Output "Update registry in the correct wallpaper"
-$WallpaperPath = "$path\photooftheday.jpg"
+$WallpaperPath = "$download\photooftheday.jpg"
 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\" -Name "Wallpaper" -Value $WallpaperPath
 
 #Function to set the wallpaper and refresh it
@@ -77,5 +79,5 @@ namespace Wallpaper
 "@
 
 #Set Wallpaper and stretch!
-Write-Output "Set Wallpaper and stretch!"
+Write-Output "Set Wallpaper and stretch! " $WallpaperPath
 [Wallpaper.Setter]::SetWallpaper( $WallpaperPath, 4 )

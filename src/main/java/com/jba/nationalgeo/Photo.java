@@ -42,7 +42,7 @@ public class Photo {
 		}
 		else {
 			String url = JSonReader.getUrl(proxyHost, proxyPort);
-			http.downloadPhoto(url);
+			http.downloadPhoto(url, null);
 			http.copyPhotoOfTheDay();
 		}
 	}
@@ -58,7 +58,7 @@ public class Photo {
 		File chosenFile = files[idz];
 
 		File fileDest = new File(getPhotoDownloadLocation());
-		System.out.println(String.format("Copying file [%1$s] to destination [%2$s]", chosenFile.toPath(), fileDest.toPath());
+		System.out.println(String.format("Copying file [%1$s] to destination [%2$s]", chosenFile.toPath(), fileDest.toPath()));
 		Files.copy(chosenFile.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
@@ -93,7 +93,7 @@ public class Photo {
 		Files.copy(fileSourcePath, fileArchiveDestPath);
 	}
 
-	private void downloadPhoto(String urlString) throws Exception {
+	public void downloadPhoto(String urlString, String name) throws Exception {
 		InputStream in = URLUtils.getContent(urlString, proxyHost, proxyPort);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] buf = new byte[1024];
@@ -104,7 +104,18 @@ public class Photo {
 		out.close();
 		in.close();
 		byte[] bresponse = out.toByteArray();
-		FileOutputStream fos = new FileOutputStream(getPhotoDownloadLocation());
+
+		FileOutputStream fos = null;
+		if(name == null) {
+			String url = getPhotoDownloadLocation();
+			String[] urlSplit = url.split("/");
+			int size = urlSplit.length;
+			String imageName = String.join("_", urlSplit[size-3], urlSplit[size-2], urlSplit[size - 1]);
+			fos = new FileOutputStream(getPhotoDownloadLocation());
+		}
+		else {
+			fos = new FileOutputStream("C://projects//nationalgeo//download//archive//" + name);
+		}
 		fos.write(bresponse);
 		fos.close();	
 	}

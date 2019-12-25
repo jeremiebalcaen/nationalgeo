@@ -5,6 +5,7 @@
 .settings/
 bin/
 build/
+download/
 gradle/
 gradlew
 gradlew.bat
