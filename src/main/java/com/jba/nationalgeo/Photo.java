@@ -1,16 +1,14 @@
 package com.jba.nationalgeo;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 public class Photo {
 
@@ -25,6 +23,7 @@ public class Photo {
 	private static String proxyPort;
 
 	public static void main(String[] args) throws Exception {
+		
 		boolean getArchivedPhoto = false;
 		if(args.length != 0) {
 			String programLocation = args[0];
@@ -36,14 +35,27 @@ public class Photo {
 				proxyPort = args[3];
 			}
 		}
-		Photo http = new Photo();
 		if(getArchivedPhoto) {
 			getRandomPhoto();
 		}
 		else {
-			String url = JSonReader.getUrl(proxyHost, proxyPort);
-			http.downloadPhoto(url, null);
-			http.copyPhotoOfTheDay();
+			BufferedWriter bw = null;
+			try {
+				File fout = new File("C://projects//nationalgeo//download//listcontent");
+				FileOutputStream fos = new FileOutputStream(fout, true);	 
+				bw = new BufferedWriter(new OutputStreamWriter(fos));
+				WallPaper wp = JSonReader.getUrl(proxyHost, proxyPort);
+				
+				downloadPhoto(bw, wp.getUrl(), wp.getImageName());
+				copyPhotoOfTheDay(wp.getImageName());
+				
+				bw.write(wp.getUrl() + "\n" + wp.getTitle() + "\n" + wp.getImageName() + "\n\n");
+				bw.flush();
+			}
+			finally {
+	    		bw.close();
+	    	}
+			
 		}
 	}
 
@@ -84,16 +96,13 @@ public class Photo {
 		photoProgramLocation = url;
 	}
 
-	private void copyPhotoOfTheDay() throws IOException {
-		File fileSource = new File(getPhotoDownloadLocation());
-		Path fileSourcePath = fileSource.toPath();
-		File fileArchiveDest = new File(getPhotoArchiveLocation() + getArchiveDateFileName() + "_" + PHOTO_FILE_NAME);
-		Path fileArchiveDestPath = fileArchiveDest.toPath();
-		Files.createDirectories(fileArchiveDestPath.getParent());
-		Files.copy(fileSourcePath, fileArchiveDestPath);
+	private static void copyPhotoOfTheDay(String imageName) throws IOException {
+		File fileDest = new File(getPhotoDownloadLocation());
+		File fileSource = new File(getPhotoArchiveLocation() + imageName);
+		Files.copy(fileSource.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
-	public void downloadPhoto(String urlString, String name) throws Exception {
+	public static void downloadPhoto(BufferedWriter bw, String urlString, String name) throws Exception {
 		InputStream in = URLUtils.getContent(urlString, proxyHost, proxyPort);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] buf = new byte[1024];
@@ -106,24 +115,9 @@ public class Photo {
 		byte[] bresponse = out.toByteArray();
 
 		FileOutputStream fos = null;
-		if(name == null) {
-			String url = getPhotoDownloadLocation();
-			String[] urlSplit = url.split("/");
-			int size = urlSplit.length;
-			String imageName = String.join("_", urlSplit[size-3], urlSplit[size-2], urlSplit[size - 1]);
-			fos = new FileOutputStream(getPhotoDownloadLocation());
-		}
-		else {
-			fos = new FileOutputStream("C://projects//nationalgeo//download//archive//" + name);
-		}
+		fos = new FileOutputStream("C://projects//nationalgeo//download//archive//" + name);
 		fos.write(bresponse);
 		fos.close();	
-	}
-
-	private String getArchiveDateFileName() {
-		Date date = Calendar.getInstance().getTime();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		return sdf.format(date);
 	}
 
 }

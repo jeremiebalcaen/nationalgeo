@@ -15,7 +15,6 @@ public class URLUtils
 
     public static InputStream getContent(String url, String proxyHost, String proxyPort) throws Exception {
         CloseableHttpClient httpclient;
-        InputStream in = null;
         if(proxyHost != null) {
             HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort), "http");
             httpclient = HttpClients.custom()
